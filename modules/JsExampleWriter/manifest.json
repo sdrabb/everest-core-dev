@@ -1,0 +1,21 @@
+{
+    "description": "Communication example module - writer",
+    "provides": {
+        "example_writer_submodule": {
+            "description": "Interface from JsExampleWriter to other modules",
+            "interface": "example_writer_interface",
+            "config": {
+                "example_writer_tx_interval_ms": {
+                    "description": "Time interval between write operations in milliseconds",
+                    "type": "integer",
+                    "minimum": 100
+                }
+            }
+        }
+    },
+    "metadata": {
+        "license": "https://opensource.org/licenses/Apache-2.0",
+        "authors": ["LAD101work"]
+    },
+    "enable_external_mqtt": false
+}

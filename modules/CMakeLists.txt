@@ -28,6 +28,8 @@ list(APPEND EVEREST_MODULES_LIST
     Store
     YetiDriver
     EvseManager
+    JsExampleWriter
+    JsExampleReader
 )
 
 set(EVEREST_MODULES "")

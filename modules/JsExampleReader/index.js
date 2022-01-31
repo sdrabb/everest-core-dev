@@ -18,12 +18,10 @@ boot_module(async ({ setup, info, config }) => {
         mod.received_integer = args;
         evlog.info(`JsExampleReader received variable value: '${mod.received_integer}'`);
     
-        if(true){
-            let msg = {
-                tx_prescaler: (4 + (mod.received_integer % 16))
-            };
-            mod.uses.example_writer_connection.call.set_tx_prescaler(msg);
-        }
+        let msg = {
+            tx_prescaler: (4 + (mod.received_integer % 16))
+        };
+        mod.uses.example_writer_connection.call.set_tx_prescaler(msg);
     });
 }).then((mod) => {
     // empty main loop

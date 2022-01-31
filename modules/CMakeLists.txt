@@ -10,6 +10,8 @@ list(APPEND EVEREST_MODULES_LIST
     JsDummyTokenValidator
     JsEmgrLogger
     JsEnergyManager
+    JsExampleWriter
+    JsExampleReader
     JsForecastDotSolar
     JsPN532TokenProvider
     JsPowerIn
@@ -28,8 +30,6 @@ list(APPEND EVEREST_MODULES_LIST
     Store
     YetiDriver
     EvseManager
-    JsExampleWriter
-    JsExampleReader
 )
 
 set(EVEREST_MODULES "")

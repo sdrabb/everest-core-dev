@@ -1,0 +1,19 @@
+{
+    "description": "Communication example module written in C++ - reader",
+	"provides": {
+		"cpp_example_reader_submodule": {
+			"description": "Implementation of this module's interface - currently unused",
+			"interface": "cpp_example_reader_interface"
+		}
+	},
+	"requires": {
+		"cpp_example_writer_connection": {
+			"interface": "cpp_example_writer_interface"
+		}
+	},
+	"enable_external_mqtt": false,
+	"metadata": {
+		"license": "https://opensource.org/licenses/Apache-2.0",
+		"authors": ["LAD101work"]
+	}
+}

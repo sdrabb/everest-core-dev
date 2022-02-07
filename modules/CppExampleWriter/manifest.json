@@ -1,0 +1,22 @@
+{
+    "description": "Communication example module written in C++ - writer",
+	"provides": {
+		"cpp_example_writer_submodule": {
+			"interface": "cpp_example_writer_interface",
+			"description": "This implements an example interface that provides a variable and a command element",
+			"config": {
+				"cpp_example_writer_tx_interval_ms": {
+					"description": "The interval between write operations in milliseconds",
+					"type": "integer",
+					"minimum": 100
+				}
+			}
+		}
+	},
+	"requires": {},
+	"enable_external_mqtt": false,
+	"metadata": {
+		"license": "https://opensource.org/licenses/Apache-2.0",
+		"authors": ["LAD101work"]
+	}
+}

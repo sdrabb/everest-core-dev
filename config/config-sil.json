@@ -142,8 +142,12 @@
     "example_reader": {
         "module": "JsExampleReader",
         "connections": {
-            "module_id": "example_writer",
-            "implementation_id": "example_writer_submodule"
+            "example_writer_connection": [
+                {
+                    "module_id": "example_writer",
+                    "implementation_id": "example_writer_submodule"
+                }
+            ]    
         }
     }
 }

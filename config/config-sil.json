@@ -141,10 +141,12 @@
     "cpp_example_reader_module_id": {
         "module": "CppExampleReader",
         "connections": {
-            "cpp_example_writer_connection": {
-                "module_id": "cpp_example_writer_module_id",
-                "implementation_id": "cpp_example_writer_submodule"
-            }
+            "cpp_example_writer_connection": [
+                {
+                    "module_id": "cpp_example_writer_module_id",
+                    "implementation_id": "cpp_example_writer_submodule"
+                }
+            ]   
         }
     }
 }

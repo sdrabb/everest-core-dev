@@ -94,9 +94,13 @@ else()
     message("Not running unit tests")
 endif()
 
+# clean this directory when make clean
+set_property(
+    DIRECTORY
+    PROPERTY ADDITIONAL_CLEAN_FILES
+        ${GENERATED_OUTPUT_DIR}
+)
 
-# auto generate headers
-set(GENERATED_HEADER_DIR ${GENERATED_OUTPUT_DIR}/interfaces)
 add_subdirectory(interfaces)
 
 # modules

@@ -1,29 +1,29 @@
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
 
 list(APPEND EVEREST_MODULES_LIST
-    Charger
-    EnergyManager
-    EnergyNode
+    # Charger
+    # EnergyManager
+    # EnergyNode
     EvseManager
-    EvseSlac
-    Example
-    ExampleUser
-    JsAuth
-    JsCarSimulator
-    JsDummyTokenProvider
-    JsDummyTokenValidator
-    JsForecastDotSolar
-    JsPN532TokenProvider
-    JsRiseV2G
-    JsTibber
-    JsYetiSimulator
-    ModbusMeter
-    OCPP
-    PersistentStore
-    Store
-    SunspecReader
-    SunspecScanner
-    YetiDriver
+    # EvseSlac
+    # Example
+    # ExampleUser
+    # JsAuth
+    # JsCarSimulator
+    # JsDummyTokenProvider
+    # JsDummyTokenValidator
+    # JsForecastDotSolar
+    # JsPN532TokenProvider
+    # JsRiseV2G
+    # JsTibber
+    # JsYetiSimulator
+    # ModbusMeter
+    # OCPP
+    # PersistentStore
+    # Store
+    # SunspecReader
+    # SunspecScanner
+    # YetiDriver
 )
 
 set(EVEREST_MODULES "")
@@ -35,8 +35,7 @@ foreach(ENTRY ${EVEREST_MODULES_LIST})
     endif()
 endforeach()
 
-set(GENERATED_MODULE_DIR ${GENERATED_OUTPUT_DIR}/modules)
-
+set(GENERATED_MODULE_DIR ${GENERATED_OUTPUT_DIR}/src/module)
 
 set(FORCE_UPDATE_COMMANDS "")
 foreach(EVEREST_MODULE ${EVEREST_MODULES})
@@ -52,30 +51,59 @@ add_custom_target(force_update_all_modules
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 )
 
-macro(cpp_module_setup)
+function(cpp_module_setup)
     get_filename_component(MODULE_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-    set(MOD_MODULE_NAME mod${MODULE_NAME})
+    set(MODULE_TARGET module_${MODULE_NAME})
     set(MODULE_LOADER_DIR ${GENERATED_MODULE_DIR}/${MODULE_NAME})
 
-    add_custom_command(
-        OUTPUT ${MODULE_LOADER_DIR}/ld-ev.hpp ${MODULE_LOADER_DIR}/ld-ev.cpp
-        COMMAND
-            ${EV_CLI} module generate-loader --framework-dir ${everest-framework_SOURCE_DIR} --output-dir ${GENERATED_MODULE_DIR} ${MODULE_NAME}
-        DEPENDS
+    add_executable(${MODULE_TARGET})
+
+    set(MODULE_CMAKE_DIRECTIVES ${MODULE_LOADER_DIR}/mod_deps.cmake)
+    if ((NOT EXISTS ${MODULE_CMAKE_DIRECTIVES}) OR (manifest.json IS_NEWER_THAN ${MODULE_CMAKE_DIRECTIVES}))
+        execute_process(
+            COMMAND
+                ${EV_CLI} module generate-sources --framework-dir ${everest-framework_SOURCE_DIR} --output-dir ${GENERATED_OUTPUT_DIR} ${MODULE_NAME}
+            WORKING_DIRECTORY
+                ${PROJECT_SOURCE_DIR}
+        )
+    endif()
+
+    # this populates ${MODULE_REQUIREMENTS} and ${MODULE_IMPLEMENTATIONS}
+    include(${MODULE_CMAKE_DIRECTIVES})
+
+    foreach(REQUIREMENT ${MODULE_REQUIREMENTS})
+        target_link_libraries(${MODULE_TARGET}
+            PRIVATE
+                interface_${REQUIREMENT}_req
+        )    
+    endforeach()
+
+    foreach(IMPLEMENTATION ${MODULE_IMPLEMENTATIONS})
+        target_link_libraries(${MODULE_TARGET}
+            PRIVATE
+                interface_${IMPLEMENTATION}_impl
+        )
+    endforeach()
+    
+
+    set_property(
+        DIRECTORY
+        APPEND PROPERTY
+        CMAKE_CONFIGURE_DEPENDS
             manifest.json
-        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMENT
-            "Generating ld-ev for module ${MODULE_NAME}"
     )
 
-    add_custom_target(ld-ev_${MODULE_NAME}
-        DEPENDS ${MODULE_LOADER_DIR}/ld-ev.cpp
+    target_include_directories(${MODULE_TARGET} PRIVATE ${GENERATED_OUTPUT_DIR}/include)
+    target_sources(${MODULE_TARGET} PRIVATE ${MODULE_LOADER_DIR}/ld-ev.cpp)
+    target_compile_features(${MODULE_TARGET} PRIVATE cxx_std_14)
+    target_link_libraries(${MODULE_TARGET}
+        PRIVATE
+            everest ${CMAKE_DL_LIBS}
+            everest::log
     )
 
-    add_executable(${MODULE_NAME})
-    add_dependencies(${MODULE_NAME} ld-ev_${MODULE_NAME} generate_interface_files)
-
-endmacro()
+    set(MODULE_TARGET ${MODULE_TARGET} PARENT_SCOPE)
+endfunction()
 
 message("everest modules: ${EVEREST_MODULES}")
 foreach(EVEREST_MODULE ${EVEREST_MODULES})

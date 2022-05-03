@@ -17,6 +17,7 @@ function(make_interface_target_available INTERFACE_NAME INTERFACE_TYPE)
         ${INTERFACE_TARGET}
         OBJECT EXCLUDE_FROM_ALL
         ${GENERATED_INTERFACE_DIR}/${INTERFACE_NAME}_${INTERFACE_TYPE}.cpp
+        ${GENERATED_INTERFACE_DIR}/${INTERFACE_NAME}_json.cpp
     )
     target_include_directories(${INTERFACE_TARGET}
         PRIVATE

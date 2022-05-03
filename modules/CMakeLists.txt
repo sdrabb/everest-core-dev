@@ -94,7 +94,11 @@ function(cpp_module_setup)
     )
 
     target_include_directories(${MODULE_TARGET} PRIVATE ${GENERATED_OUTPUT_DIR}/include)
-    target_sources(${MODULE_TARGET} PRIVATE ${MODULE_LOADER_DIR}/ld-ev.cpp)
+    target_sources(${MODULE_TARGET}
+        PRIVATE
+        ${MODULE_LOADER_DIR}/ld-ev.cpp
+        ${MODULE_LOADER_DIR}/manifest.cpp
+    )
     target_compile_features(${MODULE_TARGET} PRIVATE cxx_std_14)
     target_link_libraries(${MODULE_TARGET}
         PRIVATE

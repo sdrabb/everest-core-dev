@@ -16,7 +16,7 @@ list(APPEND EVEREST_MODULES_LIST
     JsForecastDotSolar
     JsPN532TokenProvider
     JsRiseV2G
-    JsTibber
+    JsTibberSimulator
     JsYetiSimulator
     ModbusMeter
     OCPP

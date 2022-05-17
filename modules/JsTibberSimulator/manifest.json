@@ -9,7 +9,7 @@
                     "description": "API key from Tibber developer account",
                     "type": "string"
                 },
-                "update_interval_ms": {
+                "update_interval": {
                     "description": "Update interval in minutes. Typically 0.17.",
                     "type": "integer"
                 },

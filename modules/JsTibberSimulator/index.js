@@ -31,6 +31,7 @@ async function fetch_tibber_api_data(mod) {
     currency: "EUR"
   }
   // copy into schedule_import array
+  schedule['schedule_import'] = [];
   schedule['schedule_import'].push(entry);
 
   mod.provides.main.publish.energy_price_schedule(schedule);

@@ -1,6 +1,6 @@
 {
     "description": "Simple example module written in C++",
-	"provides": {
+	"implements": {
 		"example": {
 			"interface": "example",
 			"description": "This implements an example interface that uses multiple framework features",

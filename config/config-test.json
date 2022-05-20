@@ -1,0 +1,34 @@
+{
+    "example": {
+        "module": "Example",
+        "config_implementation": {
+            "example": {
+                "current": 50,
+                "enum_test": "two",
+                "enum_test2": 2
+            }
+        },
+        "connections": {
+            "kvs": [
+                {
+                    "module_id": "kvs",
+                    "implementation_id": "main"
+                }
+            ]
+        }
+    },
+    "example_user": {
+        "module": "ExampleUser",
+        "connections": {
+            "example": [
+                {
+                    "module_id": "example",
+                    "implementation_id": "example"
+                }
+            ]
+        }
+    },
+    "kvs": {
+        "module": "Store"
+    }
+}

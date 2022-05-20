@@ -27,7 +27,7 @@
 			"default": 32
 		}
 	},
-	"provides": {
+	"implements": {
 		"evse": {
 			"interface": "evse_manager",
 			"description": "This is the main evsemanager interface"

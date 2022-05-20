@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14.7)
+cmake_minimum_required(VERSION 3.15)
 
 project(EVerest VERSION 0.1
                 DESCRIPTION "The open operating system for e-mobility charging stations"
@@ -58,13 +58,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(EDM REQUIRED)
 
-# search for ev-cli tool
-find_program(EV_CLI
-    ev-cli
-    REQUIRED
-)
+set(EV_GENERATED_OUTPUT_DIR ${CMAKE_BINARY_DIR}/generated)
 
-set(GENERATED_OUTPUT_DIR ${CMAKE_BINARY_DIR}/generated)
+include(EvCli)
 
 find_package(Boost COMPONENTS filesystem program_options system thread REQUIRED)
 
@@ -101,12 +97,13 @@ set_property(
         ${GENERATED_OUTPUT_DIR}
 )
 
+# interfaces
 add_subdirectory(interfaces)
 
 # modules
 add_subdirectory(modules)
 
-# interfaces
+
 install(DIRECTORY "interfaces/" DESTINATION interfaces
         FILES_MATCHING PATTERN "*.json"
 )

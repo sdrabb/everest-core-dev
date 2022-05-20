@@ -1,6 +1,6 @@
 {
     "description": "Simple implementation of a memory-backed key-value store",
-	"provides": {
+	"implements": {
 		"main": {
 			"interface": "kvs",
 			"description": "This implements a key-value store"

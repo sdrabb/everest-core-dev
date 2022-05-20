@@ -1,11 +1,5 @@
 {
     "description": "Simple example module written in C++ and using the other example module",
-	"provides": {
-		"example_user": {
-			"interface": "example_user",
-			"description": "This implements the example_user interface"
-		}
-	},
 	"requires": {
 		"example": {
 			"interface": "example"

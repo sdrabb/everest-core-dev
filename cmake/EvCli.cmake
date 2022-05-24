@@ -8,8 +8,7 @@ if (NOT DEFINED EV_GENERATED_OUTPUT_DIR)
     message(FATAL_ERROR "The variable EV_GENERATED_OUTPUT_DIR needs to be set before including EcCli.cmake")
 endif()
 
-
-
+# FIXME (aw): some of the scripts in here do not really relate to ev-cli
 
 function(ev_add_generate_interface_target INTERFACE_NAME)
     set(GENERATED_INTERFACE_SRC_DIR ${EV_GENERATED_OUTPUT_DIR}/src/interface)
@@ -143,6 +142,11 @@ function(ev_setup_cpp_module)
 
     set(MODULE_DEST "modules/${MODULE_NAME}")
 
+    set(EV_CURRENT_MODULE_STAGE_DIR ${EV_MODULE_STAGE_DIR}/${MODULE_NAME})
+    file (MAKE_DIRECTORY ${EV_CURRENT_MODULE_STAGE_DIR})
+    file (CREATE_LINK ${CMAKE_CURRENT_BINARY_DIR}/${MODULE_NAME} ${EV_CURRENT_MODULE_STAGE_DIR}/${MODULE_NAME} SYMBOLIC)
+    file (CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR}/manifest.json ${EV_CURRENT_MODULE_STAGE_DIR}/manifest.json SYMBOLIC)
+
     install(TARGETS ${MODULE_TARGET}
         DESTINATION ${MODULE_DEST}
     )
@@ -150,4 +154,77 @@ function(ev_setup_cpp_module)
     install(FILES manifest.json
         DESTINATION ${MODULE_DEST}
     )
+endfunction()
+
+function(ev_setup_js_module)
+    get_filename_component(JS_MODULE_NAME ${CMAKE_CURRENT_SOURCE_DIR} NAME)
+
+    set (JS_MODULE_PACKAGE_DIR ${EV_MODULE_STAGE_DIR}/${JS_MODULE_NAME})
+
+    if (${JS_MODULE_NAME} IN_LIST EV_SYMBOLIC_LINKED_JS_MODULES OR EV_SYMBOLIC_LINKED_JS_MODULES STREQUAL "ALL")
+        if (NOT IS_SYMLINK ${JS_MODULE_PACKAGE_DIR} AND IS_DIRECTORY ${JS_MODULE_PACKAGE_DIR})
+            # remove if real directory
+            # FIXME (aw): should these commands be checked, so we do only safe deleting?
+            file(REMOVE_RECURSE ${JS_MODULE_PACKAGE_DIR})
+        endif ()
+
+        file (CREATE_LINK ${CMAKE_CURRENT_SOURCE_DIR} ${JS_MODULE_PACKAGE_DIR} SYMBOLIC)
+    else()
+        if (IS_SYMLINK ${JS_MODULE_PACKAGE_DIR})
+            file(REMOVE_RECURSE ${JS_MODULE_PACKAGE_DIR})
+        endif ()
+        file (MAKE_DIRECTORY ${JS_MODULE_PACKAGE_DIR})
+
+        add_custom_target(rsync_check_${JS_MODULE_NAME}
+            COMMAND
+                rsync -ai --delete --exclude='node_modules' --exclude='CMakeLists.txt' --exclude='dist' ${CMAKE_CURRENT_SOURCE_DIR}/ ${JS_MODULE_PACKAGE_DIR}/ | grep . -q && touch ${CMAKE_CURRENT_BINARY_DIR}/.last_rsync_ts || true
+        )
+
+        add_custom_command(
+            OUTPUT
+                ${JS_MODULE_PACKAGE_DIR}/package.json  .last_rsync_ts
+            DEPENDS
+                rsync_check_${JS_MODULE_NAME}
+        )
+
+        add_custom_command(
+            COMMENT
+                "Running npm install for javascript module ${JS_MODULE_NAME}"
+            OUTPUT
+                .npm_install_done
+            COMMAND
+                npm install --no-save $<TARGET_FILE_DIR:everestjs>/package > ${CMAKE_CURRENT_BINARY_DIR}/.npm_install_log 2>&1 || (cat ${CMAKE_CURRENT_BINARY_DIR}/.npm_install_log; false)
+            COMMAND
+                touch ${CMAKE_CURRENT_BINARY_DIR}/.npm_install_done
+            DEPENDS
+                ${JS_MODULE_PACKAGE_DIR}/package.json
+                everestjs_package
+            WORKING_DIRECTORY
+                ${JS_MODULE_PACKAGE_DIR}
+        )
+
+        # needs to be figured out
+        add_custom_command(
+            COMMENT
+                "Building npm package for javascript module ${JS_MODULE_NAME}"
+            OUTPUT
+                .npm_package_done
+            COMMAND
+                npm run-script build > ${CMAKE_CURRENT_BINARY_DIR}/.npm_package_log 2>&1 || (cat ${CMAKE_CURRENT_BINARY_DIR}/.npm_package_log; false)
+            COMMAND
+                touch ${CMAKE_CURRENT_BINARY_DIR}/.npm_package_done
+            DEPENDS
+                .npm_install_done .last_rsync_ts
+            WORKING_DIRECTORY
+                ${JS_MODULE_PACKAGE_DIR}
+        )
+
+        set (EV_PACKAGE_JS_MODULE_TARGET ev_package_${JS_MODULE_NAME})
+        add_custom_target(${EV_PACKAGE_JS_MODULE_TARGET}
+            DEPENDS
+                .npm_package_done
+        )
+
+        add_dependencies(ev_setup_stage ${EV_PACKAGE_JS_MODULE_TARGET})
+    endif()
 endfunction()

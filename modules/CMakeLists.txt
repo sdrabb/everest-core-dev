@@ -13,6 +13,7 @@ list(APPEND EVEREST_MODULES_LIST
     # JsDummyTokenProvider
     # JsDummyTokenValidator
     # JsForecastDotSolar
+    JsExample
     # JsPN532TokenProvider
     # JsRiseV2G
     # JsTibber

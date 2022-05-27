@@ -2,3 +2,6 @@
 *build-cross
 *.cache
 workspace.yaml
+*core
+*node_modules
+modules/Js**/dist

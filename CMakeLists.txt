@@ -32,8 +32,6 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/dist" CACHE PATH "..." FORCE)
 endif()
 
-option(CREATE_SYMLINKS "Create symlinks to javascript modules and auxillary files - for development purposes" OFF)
-
 option(BUILD_TESTING "Run unit tests" OFF)
 
 # configure clang-tidy if requested
@@ -58,20 +56,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 find_package(EDM REQUIRED)
 
-set (EV_STAGE_DIR ${CMAKE_BINARY_DIR}/ev-stage)
-set (EV_MODULE_STAGE_DIR ${EV_STAGE_DIR}/modules)
-set (EV_SYMBOLIC_LINKED_JS_MODULES "")
-set (EV_GENERATED_OUTPUT_DIR ${CMAKE_BINARY_DIR}/generated)
-
-file (MAKE_DIRECTORY ${EV_MODULE_STAGE_DIR})
-add_custom_target(ev_setup_stage ALL
-    COMMAND
-        ${CMAKE_COMMAND} -E create_symlink $<TARGET_FILE:manager>  $<TARGET_FILE_NAME:manager>
-    WORKING_DIRECTORY
-        ${EV_STAGE_DIR}
-)
-
-include(EvCli)
+include(EverestBuild)
 
 find_package(Boost COMPONENTS filesystem program_options system thread REQUIRED)
 
@@ -108,12 +93,11 @@ set_property(
         ${GENERATED_OUTPUT_DIR}
 )
 
-# interfaces
-add_subdirectory(interfaces)
-
 # modules
 add_subdirectory(modules)
 
+# interfaces
+add_subdirectory(interfaces)
 
 install(DIRECTORY "interfaces/" DESTINATION interfaces
         FILES_MATCHING PATTERN "*.json"

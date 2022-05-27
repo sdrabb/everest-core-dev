@@ -1,12 +1,12 @@
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--no-undefined")
 
-list(APPEND EVEREST_MODULES_LIST
+list(APPEND EVEREST_MODULES
     # Charger
     # EnergyManager
     # EnergyNode
     # EvseManager
     # EvseSlac
-    Example
+    # Example
     ExampleUser
     # JsAuth
     # JsCarSimulator
@@ -28,30 +28,9 @@ list(APPEND EVEREST_MODULES_LIST
     # TestPwr
 )
 
-set(EVEREST_MODULES "")
-foreach(ENTRY ${EVEREST_MODULES_LIST})
-    if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${ENTRY})
-        if(NOT "${ENTRY}" STREQUAL "CMakeFiles")
-            list(APPEND EVEREST_MODULES ${ENTRY})
-        endif()
-    endif()
-endforeach()
-
-# set(FORCE_UPDATE_COMMANDS "")
-# foreach(EVEREST_MODULE ${EVEREST_MODULES})
-#     if(NOT ${EVEREST_MODULE} MATCHES "^Js")
-#         list(APPEND FORCE_UPDATE_COMMANDS
-#             COMMAND ${EV_CLI} module update --framework-dir ${everest-framework_SOURCE_DIR} -f ${EVEREST_MODULE}
-#         )
-#     endif()
-# endforeach()
-
-# add_custom_target(force_update_all_modules
-#     ${FORCE_UPDATE_COMMANDS}
-#     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-# )
-
-message("everest modules: ${EVEREST_MODULES}")
 foreach(EVEREST_MODULE ${EVEREST_MODULES})
+    if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${EVEREST_MODULE}/manifest.json)
+        ev_register_module(${EVEREST_MODULE})
+    endif()
     add_subdirectory(${EVEREST_MODULE})
 endforeach()

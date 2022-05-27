@@ -4,8 +4,11 @@
         "commonjs": true,
         "es2021": true
     },
+    "plugins": ["@typescript-eslint"],
     "extends": [
-        "airbnb-base"
+        "plugin:@typescript-eslint/recommended",
+        "airbnb-base",
+        "prettier"
     ],
     "parserOptions": {
         "ecmaVersion": 12

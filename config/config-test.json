@@ -1,6 +1,6 @@
 {
     "example": {
-        "module": "Example",
+        "module": "JsExample",
         "config_implementation": {
             "example": {
                 "current": 50,

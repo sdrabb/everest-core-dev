@@ -15,6 +15,8 @@ function (_ev_add_generate_interface_target_ts INTERFACE_NAME)
             ${INTERFACE_NAME}.json
         COMMAND
             ${EV_CLI} interface generate-typescript --framework-dir ${everest-framework_SOURCE_DIR} --output-dir ${GENERATED_INTERFACE_TS_DIR} ${INTERFACE_NAME} > /dev/null
+        COMMAND
+            ${CMAKE_COMMAND} -E remove -f ${EV_JS_TYPE_LAYER_DIR}/.tsc_done
         WORKING_DIRECTORY
             ${PROJECT_SOURCE_DIR}
     )
@@ -23,6 +25,8 @@ function (_ev_add_generate_interface_target_ts INTERFACE_NAME)
         DEPENDS
             ${GENERATED_INTERFACE_TS_DIR}/${INTERFACE_NAME}.ts
     )
+
+    add_dependencies(ev_js_type_layer_tsc ${GENERATE_INTERFACE_TARGET})
 
 endfunction ()
 
@@ -35,13 +39,8 @@ function (_ev_add_interface_target_ts INTERFACE_NAME)
         OUTPUT
             ${EV_JS_TYPE_LAYER_DIST_DIR}/interface/${INTERFACE_NAME}.js
             ${EV_JS_TYPE_LAYER_DIST_DIR}/interface/${INTERFACE_NAME}.d.ts
-        COMMAND
-            # npx tsc -d --outDir lib/interface src/interface/${INTERFACE_NAME}.ts
-            npx tsc
-        WORKING_DIRECTORY
-            ${EV_JS_TYPE_LAYER_DIR}
         DEPENDS
-            generate_interface_${INTERFACE_NAME}_ts
+            ev_js_type_layer_tsc
     )
 
     file (MAKE_DIRECTORY ${EV_JS_TYPE_LAYER_DIST_DIR}/interface)
@@ -78,34 +77,29 @@ function (_ev_add_module_target_ts MODULE_NAME)
             ${GENERATED_MODULE_TS_DIR}/${MODULE_NAME}.ts
         COMMAND
             ${EV_CLI} module generate-typescript --framework-dir ${everest-framework_SOURCE_DIR} --output-dir ${GENERATED_MODULE_TS_DIR} ${MODULE_NAME} > /dev/null
+        COMMAND
+            ${CMAKE_COMMAND} -E remove -f ${EV_JS_TYPE_LAYER_DIR}/.tsc_done
         DEPENDS
             ${CMAKE_CURRENT_SOURCE_DIR}/${MODULE_NAME}/manifest.json
         WORKING_DIRECTORY
             ${PROJECT_SOURCE_DIR}
     )
 
-    set (REQUIRED_TRANSPILED_INTERFACES "")
+    add_custom_target(generate_module_${MODULE_NAME}_ts
+        DEPENDS
+            ${GENERATED_MODULE_TS_DIR}/${MODULE_NAME}.ts
+    )
 
-    foreach(INTERFACE_NAME ${MODULE_REQUIRES})
-        list (APPEND REQUIRED_TRANSPILED_INTERFACES interface_${INTERFACE_NAME}_js)
-    endforeach()
-    foreach(INTERFACE_NAME ${MODULE_IMPLEMENTS})
-        list (APPEND REQUIRED_TRANSPILED_INTERFACES interface_${INTERFACE_NAME}_js)
-    endforeach()
+    add_dependencies(ev_js_type_layer_tsc generate_module_${MODULE_NAME}_ts)
 
     add_custom_command(
         COMMENT
             "Transpiling typescript source files for module '${MODULE_NAME}'"
         OUTPUT
-            ${EV_JS_TYPE_LAYER_DIR}/lib/module/${MODULE_NAME}.js
-            ${EV_JS_TYPE_LAYER_DIR}/lib/module/${MODULE_NAME}.d.ts
+            ${EV_JS_TYPE_LAYER_DIST_DIR}/module/${MODULE_NAME}.js
+            ${EV_JS_TYPE_LAYER_DIST_DIR}/module/${MODULE_NAME}.d.ts
         DEPENDS
-            ${EV_JS_TYPE_LAYER_DIR}/src/module/${MODULE_NAME}.ts
-            ${REQUIRED_TRANSPILED_INTERFACES}
-        COMMAND
-            # FIXME (aw): is it possible to tell tsc, that it should only process the files without includes?
-            #  npx tsc -d --outDir lib/module src/module/${MODULE_NAME}.ts
-            npx tsc
+            ev_js_type_layer_tsc
         WORKING_DIRECTORY
             ${EV_JS_TYPE_LAYER_DIR}
     )
@@ -300,6 +294,19 @@ function (_ev_setup_js_type_layer)
         file (MAKE_DIRECTORY ${EV_JS_TYPE_LAYER_DIST_DIR})
         file (COPY ${PACKAGE_JSON} DESTINATION ${EV_JS_TYPE_LAYER_DIST_DIR})
     endif()
+
+    add_custom_target(ev_js_type_layer_tsc
+        DEPENDS
+            everestjs_package
+        BYPRODUCTS
+            ${EV_JS_TYPE_LAYER_DIR}/.tsc_done
+        COMMAND
+            test -e ${EV_JS_TYPE_LAYER_DIR}/.tsc_done || npx tsc
+        COMMAND
+            ${CMAKE_COMMAND} -E touch ${EV_JS_TYPE_LAYER_DIR}/.tsc_done
+        WORKING_DIRECTORY
+            ${EV_JS_TYPE_LAYER_DIR}
+    )
 
 endfunction()
 

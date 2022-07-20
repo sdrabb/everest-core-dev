@@ -25,16 +25,6 @@
 			"type": "number",
 			"default": 230
 		},
-		"dc_current_regulation_tolerance": {
-			"description": "DC current regulation tolerance in Ampere",
-			"type": "number",
-			"default": 5
-		},
-		"dc_peak_current_ripple": {
-			"description": "DC peal current ripple in Ampere",
-			"type": "number",
-			"default": 5
-		},
 		"ev_receipt_required": {
 			"description": "Unsupported: request receipt from EV with HLC",
 			"type": "boolean",
@@ -150,6 +140,11 @@
 		},
 		"imd": {
 			"interface": "isolation_monitor",
+			"min_connections": 0,
+			"max_connections": 1
+		},
+		"powersupply_DC": {
+			"interface": "power_supply_DC",
 			"min_connections": 0,
 			"max_connections": 1
 		}

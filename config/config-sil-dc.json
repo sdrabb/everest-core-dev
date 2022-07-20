@@ -19,17 +19,13 @@
         "module": "EvseManager",
         "config_module": {
             "connector_id": 1,
-            "three_phases": true,
-            "has_ventilation": true,
             "country_code": "DE",
             "rcd_enabled": true,
             "evse_id": "DE*PNX*E12345",
             "session_logging": true,
             "session_logging_xml": false,
             "session_logging_path": "/tmp",
-            "ac_hlc_enabled": false,
-            "ac_hlc_use_5percent": false,
-            "ac_enforce_hlc": false
+            "charge_mode": "DC"
         },
         "connections": {
             "bsp": [
@@ -55,8 +51,17 @@
                     "module_id": "iso15118_charger",
                     "implementation_id": "charger"
                 }
+            ],
+            "powersupply_DC": [
+                {
+                    "module_id": "powersupply_dc",
+                    "implementation_id": "main"
+                }
             ]
         }
+    },
+    "powersupply_dc": {
+        "module": "JsDCSupplySimulator"
     },
     "yeti_driver": {
         "module": "JsYetiSimulator"
@@ -69,8 +74,8 @@
         "config_module": {
             "connector_id": 1,
             "auto_enable": true,
-	    "auto_exec": false,
-	    "auto_exec_commands": "sleep 1;iec_wait_pwr_ready;sleep 1;draw_power_regulated 16,3;sleep 30;unplug"
+            "auto_exec": false,
+            "auto_exec_commands": "sleep 1;iec_wait_pwr_ready;sleep 1;draw_power_regulated 16,3;sleep 30;unplug"
         },
         "connections": {
             "simulation_control": [

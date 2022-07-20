@@ -1,35 +1,33 @@
 {
-    "description": "SIL Implementation of an Isolation Monitoring Device (IMD) for DC charging",
+	"description": "SIL Implementation of an Isolation Monitoring Device (IMD) for DC charging",
 	"provides": {
 		"main": {
 			"interface": "isolation_monitor",
 			"description": "Main interface for the IMD",
 			"config": {
-				"status": {
-					"description": "Status to return after simulated measurement",
-					"type": "string",
-					"enum": [
-						"Invalid",
-						"Valid",
-						"Warning",
-						"Fault",
-						"No_IMD"
-					],
-					"default": "Valid"
+				"resistance_N_Ohm": {
+					"description": "Resistance to return for the simulated measurements in Ohm",
+					"type": "number",
+					"default": 900000
 				},
-				"duration": {
-					"description": "Measurement duration in seconds",
+				"resistance_P_Ohm": {
+					"description": "Resistance to return for the simulated measurements in Ohm",
+					"type": "number",
+					"default": 910000
+				},
+				"interval": {
+					"description": "Measurement update interval in milliseconds",
 					"type": "integer",
-					"default": 5
+					"default": 1000
 				}
 			}
 		}
 	},
 	"enable_external_mqtt": true,
 	"metadata": {
-        "license": "https://opensource.org/licenses/Apache-2.0",
+		"license": "https://opensource.org/licenses/Apache-2.0",
 		"authors": [
-            "Cornelius Claussen (Pionix GmbH)"
-        ]
+			"Cornelius Claussen (Pionix GmbH)"
+		]
 	}
 }

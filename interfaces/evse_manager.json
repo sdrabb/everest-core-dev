@@ -28,6 +28,10 @@
                 "id_tag": {
                     "description": "The authorized id tag",
                     "type": "string"
+                },
+                "pnc": {
+                    "description": "True: PnC auth, false: EIM auth",
+                    "type": "boolean"
                 }
             }
         },

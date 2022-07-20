@@ -120,11 +120,7 @@
                 "debug_mode": {
                     "description": "The various debug modes",
                     "type": "string",
-                    "enum": [
-                        "None",
-                        "Lite",
-                        "Full"
-                    ]
+                    "$ref": "/iso15118_charger#/DebugMode"
                 }
             }
         },
@@ -206,58 +202,23 @@
                 }
             }
         },
-        "set_DC_EVSEMaximumCurrentLimit": {
-            "description": "ChargeParameterDiscovery and during charging - Set the maximum current for the EVSE",
+        "set_DC_EVSEMaximumLimits": {
+            "description": "ChargeParameterDiscovery and during charging - Set the maximum current, power and voltage for the EVSE",
             "arguments": {
-                "EVSEMaximumCurrentLimit": {
-                    "description": "[A] Maximum current the EVSE can deliver",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 400
+                "EVSEMaximumLimits": {
+                    "description": "Maximum Values (current, power and voltage) the EVSE can deliver",
+                    "type": "object",
+                    "$ref": "/iso15118_charger#/DC_EVSEMaximumLimits"
                 }
             }
         },
-        "set_DC_EVSEMaximumPowerLimit": {
-            "description": "ChargeParameterDiscovery and during charging - Set the maximum power for the EVSE",
+        "set_DC_EVSEMinimumLimits": {
+            "description": "ChargeParameterDiscovery - Set the minimum current and voltage for the EVSE",
             "arguments": {
-                "EVSEMaximumPowerLimit": {
-                    "description": "[W] Maximum power the EVSE can deliver",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 200000
-                }
-            }
-        },
-        "set_DC_EVSEMaximumVoltageLimit": {
-            "description": "ChargeParameterDiscovery and during charging - Set the maximum voltage for the EVSE",
-            "arguments": {
-                "EVSEMaximumVoltageLimit": {
-                    "description": "[V] Maximum voltage the EVSE can deliver",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1000
-                }
-            }
-        },
-        "set_DC_EVSEMinimumCurrentLimit": {
-            "description": "ChargeParameterDiscovery - Set the minimum current for the EVSE",
-            "arguments": {
-                "EVSEMinimumCurrentLimit": {
-                    "description": "[A] Minimum current the EVSE can deliver with the expected accuracy",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 400
-                }
-            }
-        },
-        "set_DC_EVSEMinimumVoltageLimit": {
-            "description": "ChargeParameterDiscovery - Set the minimum voltage for the EVSE",
-            "arguments": {
-                "EVSEMinimumVoltageLimit": {
-                    "description": "[V] Minimum voltage the EVSE can deliver with the expected accuracy",
-                    "type": "number",
-                    "minimum": 0,
-                    "maximum": 1000
+                "EVSEMinimumLimits": {
+                    "description": "Minimum Values (current and voltage) the EVSE can deliver",
+                    "type": "object",
+                    "$ref": "/iso15118_charger#/DC_EVSEMinimumLimits"
                 }
             }
         },
@@ -267,13 +228,7 @@
                 "EVSEIsolationStatus": {
                     "description": "Set the isolation status",
                     "type": "string",
-                    "enum": [
-                        "Invalid",
-                        "Valid",
-                        "Warning",
-                        "Fault",
-                        "No_IMD"
-                    ]
+                    "$ref": "/iso15118_charger#/IsolationStatus"
                 }
             }
         },
@@ -310,172 +265,7 @@
                 "powermeter": {
                     "description": "Measured dataset",
                     "type": "object",
-                    "required": [
-                        "timestamp"
-                    ],
-                    "properties": {
-                        "timestamp": {
-                            "description": "Timestamp of measurement",
-                            "type": "number"
-                        },
-                        "meter_id": {
-                            "description": "A (user defined) meter if (e.g. id printed on the case)",
-                            "type": "string"
-                        },
-                        "phase_seq_error": {
-                            "description": "true for 3 phase rotation error (ccw)",
-                            "type": "boolean"
-                        },
-                        "energy_Wh_import": {
-                            "description": "Imported energy in Wh (from grid)",
-                            "type": "object",
-                            "required": [
-                                "total"
-                            ],
-                            "properties": {
-                                "total": {
-                                    "description": "Sum value (which is relevant for billing)",
-                                    "type": "number"
-                                },
-                                "L1": {
-                                    "description": "L1 value only",
-                                    "type": "number"
-                                },
-                                "L2": {
-                                    "description": "L2 value only",
-                                    "type": "number"
-                                },
-                                "L3": {
-                                    "description": "L3 value only",
-                                    "type": "number"
-                                }
-                            },
-                            "additionalProperties": false
-                        },
-                        "energy_Wh_export": {
-                            "description": "Exported energy in Wh (to grid)",
-                            "type": "object",
-                            "required": [
-                                "total"
-                            ],
-                            "properties": {
-                                "total": {
-                                    "description": "Sum value (which is relevant for billing)",
-                                    "type": "number"
-                                },
-                                "L1": {
-                                    "description": "L1 value only",
-                                    "type": "number"
-                                },
-                                "L2": {
-                                    "description": "L2 value only",
-                                    "type": "number"
-                                },
-                                "L3": {
-                                    "description": "L3 value only",
-                                    "type": "number"
-                                }
-                            },
-                            "additionalProperties": false
-                        },
-                        "power_W": {
-                            "description": "Instantaneous power in Watt. Negative values are exported, positive values imported Energy.",
-                            "type": "object",
-                            "required": [
-                                "total"
-                            ],
-                            "properties": {
-                                "total": {
-                                    "description": "Sum value",
-                                    "type": "number"
-                                },
-                                "L1": {
-                                    "description": "L1 value only",
-                                    "type": "number"
-                                },
-                                "L2": {
-                                    "description": "L2 value only",
-                                    "type": "number"
-                                },
-                                "L3": {
-                                    "description": "L3 value only",
-                                    "type": "number"
-                                }
-                            },
-                            "additionalProperties": false
-                        },
-                        "voltage_V": {
-                            "description": "Voltage in Volts",
-                            "type": "object",
-                            "required": [
-                                "L1"
-                            ],
-                            "properties": {
-                                "L1": {
-                                    "description": "L1 value only",
-                                    "type": "number"
-                                },
-                                "L2": {
-                                    "description": "L2 value only",
-                                    "type": "number"
-                                },
-                                "L3": {
-                                    "description": "L3 value only",
-                                    "type": "number"
-                                }
-                            },
-                            "additionalProperties": false
-                        },
-                        "current_A": {
-                            "description": "Current in ampere",
-                            "type": "object",
-                            "required": [
-                                "L1"
-                            ],
-                            "properties": {
-                                "L1": {
-                                    "description": "L1 value only",
-                                    "type": "number"
-                                },
-                                "L2": {
-                                    "description": "L2 value only",
-                                    "type": "number"
-                                },
-                                "L3": {
-                                    "description": "L3 value only",
-                                    "type": "number"
-                                },
-                                "N": {
-                                    "description": "Neutral value only",
-                                    "type": "number"
-                                }
-                            },
-                            "additionalProperties": false
-                        },
-                        "frequency_Hz": {
-                            "description": "Grid frequency in Hertz",
-                            "type": "object",
-                            "required": [
-                                "L1"
-                            ],
-                            "properties": {
-                                "L1": {
-                                    "description": "L1 value",
-                                    "type": "number"
-                                },
-                                "L2": {
-                                    "description": "L2 value",
-                                    "type": "number"
-                                },
-                                "L3": {
-                                    "description": "L3 value",
-                                    "type": "number"
-                                }
-                            },
-                            "additionalProperties": false
-                        }
-                    },
-                    "additionalProperties": false
+                    "$ref": "/powermeter#/Powermeter"
                 }
             }
         },
@@ -496,6 +286,15 @@
                     "type": "boolean"
                 }
             }
+        },
+        "cableCheck_Finished": {
+            "description": "Cable check is finished, voltage is under 20V and insulation resistor on the cable is alright",
+            "arguments": {
+                "status": {
+                    "description": "True: Cable check is okay",
+                    "type": "boolean"
+                }
+            }
         }
     },
     "vars": {
@@ -507,10 +306,6 @@
             "description": "An PnC authorization is requiered",
             "type": "null"
         },
-        "Require_EVSEIsolationCheck": {
-            "description": "An insulation check of the DC cable of the EVSE is necessary",
-            "type": "null"
-        },
         "AC_Close_Contactor": {
             "description": "If true, the contactor should be closed",
             "type": "boolean"
@@ -519,8 +314,24 @@
             "description": "If true, the contactor should be opened",
             "type": "boolean"
         },
+        "Start_CableCheck": {
+            "description": "The charger should now start a cable check",
+            "type": "null"
+        },
+        "DC_Open_Contactor": {
+            "description": "If true, the contactor should be opened",
+            "type": "boolean"
+        },
         "V2G_Setup_Finished": {
             "description": "V2G_Setup_Finished from ISO15118-3. Trigger when EV sends a PowerDeliveryReq message with ChargeProgess equals Start or Stop",
+            "type": "null"
+        },
+        "currentDemand_Started": {
+            "description": "The charging process has started and the EV wants to be charged",
+            "type": "null"
+        },
+        "currentDemand_Finished": {
+            "description": "The charging process was finished",
             "type": "null"
         },
         "EVCCIDD": {
@@ -531,22 +342,12 @@
         "SelectedPaymentOption": {
             "description": "This element is used for indicating the payment type",
             "type": "string",
-            "enum": [
-                "Contract",
-                "ExternalPayment"
-            ]
+            "$ref": "/iso15118_charger#/PaymentOption"
         },
         "RequestedEnergyTransferMode": {
             "description": "Selected energy transfer mode for charging that is requested by the EVCC.",
             "type": "string",
-            "enum": [
-                "AC_single_phase_core",
-                "AC_three_phase_core",
-                "DC_core",
-                "DC_extended",
-                "DC_combo_core",
-                "DC_unique"
-            ]
+            "$ref": "/iso15118_charger#/EnergyTransferMode"
         },
         "DepartureTime": {
             "description": "Optional: [RFC3339 UTC] This element is used to indicate when the vehicle intends to finish the charging process",
@@ -601,41 +402,15 @@
             "minimum": 0,
             "maximum": 100
         },
-        "DC_EVReady": {
-            "description": "If set to TRUE, the EV is ready to charge",
-            "type": "boolean"
-        },
-        "DC_EVErrorCode": {
-            "description": "Indicates the EV internal status",
-            "type": "string",
-            "enum": [
-                "NO_ERROR",
-                "FAILED_RESSTemperatureInhibit",
-                "FAILED_EVShiftPosition",
-                "FAILED_ChargerConnectorLockFault",
-                "FAILED_EVRESSMalfunction",
-                "FAILED_ChargingCurrentdifferentia",
-                "FAILED_ChargingVoltageOutOfRange",
-                "Reserved_A",
-                "Reserved_B",
-                "Reserved_C",
-                "FAILED_ChargingSystemIncompatibility",
-                "NoData"
-            ]
-        },
-        "DC_EVRESSSOC": {
-            "description": "State of charge of the EVs battery (RESS)",
-            "type": "number",
-            "minimum": 0,
-            "maximum": 100
+        "DC_EVStatus": {
+            "description": "Current status of the EV",
+            "type": "object",
+            "$ref": "/iso15118_charger#/DC_EVStatusType"
         },
         "EV_ChargingSession": {
             "description": "ChargingSession indicates the intention of the EVCC to either pause or terminate a V2G Communication Session",
             "type": "string",
-            "enum": [
-                "Terminate",
-                "Pause"
-            ]
+            "$ref": "/iso15118_charger#/ChargingSession"
         },
         "DC_BulkChargingComplete": {
             "description": "Optional: If set to TRUE, the EV indicates that bulk charge (approx. 80% SOC) is complete",
@@ -645,45 +420,20 @@
             "description": "Optional: If set to TRUE, the EV indicates that full charge (100% SOC) is complete",
             "type": "boolean"
         },
-        "DC_EVTargetVoltage": {
-            "description": "[V] Target Voltage requested by EV",
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1000
+        "DC_EVTargetVoltageCurrent": {
+            "description": "Target voltage and current requested by the EV",
+            "type": "object",
+            "$ref": "/iso15118_charger#/DC_EVTargetValues"
         },
-        "DC_EVTargetCurrent": {
-            "description": "[A] Current demanded by EV",
-            "type": "number",
-            "minimum": 0,
-            "maximum": 400
+        "DC_EVMaximumLimits": {
+            "description": "Maximum Values (current, power and voltage) supported and allowed by the EV",
+            "type": "object",
+            "$ref": "/iso15118_charger#/DC_EVMaximumLimits"
         },
-        "DC_EVMaximumCurrentLimit": {
-            "description": "[A] Maximum current supported and allowed by the EV",
-            "type": "number",
-            "minimum": 0,
-            "maximum": 400
-        },
-        "DC_EVMaximumPowerLimit": {
-            "description": "Optional: [W] Maximum power supported and allowed by the EV",
-            "type": "number",
-            "minimum": 0,
-            "maximum": 200000
-        },
-        "DC_EVMaximumVoltageLimit": {
-            "description": "[V] Maximum voltage supported and allowed by the EV",
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1000
-        },
-        "EV_RemainingTimeToFullSoC": {
-            "description": "[RFC3339 UTC] Estimated or calculated time until full charge (100% SOC) is complete",
-            "type": "string",
-            "format": "date-time"
-        },
-        "EV_RemainingTimeToBulkSoC": {
-            "description": "[RFC3339 UTC] Estimated or calculated time until bulk charge (approx. 80% SOC) is complete",
-            "type": "string",
-            "format": "date-time"
+        "DC_EVRemainingTime": {
+            "description": "Estimated or calculated time until bulk and full charge is complete",
+            "type": "object",
+            "$ref": "/iso15118_charger#/DC_EVRemainingTime"
         },
         "EV_AppProtocol": {
             "description": "Debug_Lite - This request message provides a list of charging protocols supported by the EVCC",
@@ -729,62 +479,7 @@
         "V2G_Messages": {
             "description": "Debug - This element contains all V2G elements and should be used for debug purposes only",
             "type": "object",
-            "properties": {
-                "V2G_Message_ID": {
-                    "description": "This element contains the id of the v2g message body",
-                    "type": "string",
-                    "enum": [
-                        "SupportedAppProtocolReq",
-                        "SupportedAppProtocolRes",
-                        "SessionSetupReq",
-                        "SessionSetupRes",
-                        "ServiceDiscoveryReq",
-                        "ServiceDiscoveryRes",
-                        "ServiceDetailReq",
-                        "ServiceDetailRes",
-                        "PaymentServiceSelectionReq",
-                        "PaymentServiceSelectionRes",
-                        "AuthorizationReq",
-                        "AuthorizationRes",
-                        "ChargeParameterDiscoveryReq",
-                        "ChargeParameterDiscoveryRes",
-                        "ChargingStatusReq",
-                        "ChargingStatusRes",
-                        "PowerDeliveryReq",
-                        "PowerDeliveryRes",
-                        "CableCheckReq",
-                        "CableCheckRes",
-                        "PreChargeReq",
-                        "PreChargeRes",
-                        "CurrentDemandReq",
-                        "CurrentDemandRes",
-                        "WeldingDetectionReq",
-                        "WeldingDetectionRes",
-                        "SessionStopReq",
-                        "SessionStopRes"
-                    ]
-                },
-                "V2G_Message_XML": {
-                    "description": "Contains the decoded EXI stream as V2G message XML file",
-                    "type": "string",
-                    "minLength": 0
-                },
-                "V2G_Message_JSON": {
-                    "description": "Contains the decoded EXI stream as V2G message JSON file",
-                    "type": "string",
-                    "minLength": 0
-                },
-                "V2G_Message_EXI_Hex": {
-                    "description": "Contains the EXI stream as hex string",
-                    "type": "string",
-                    "minLength": 0
-                },
-                "V2G_Message_EXI_Base64": {
-                    "description": "Contains the EXI stream as base64 string",
-                    "type": "string",
-                    "minLength": 0
-                }
-            }
+            "$ref": "/iso15118_charger#/V2G_Messages"
         }
     }
 }

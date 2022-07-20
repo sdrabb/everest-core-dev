@@ -86,7 +86,6 @@ function modify_charging_session(mod, args) {
 boot_module(async ({
   setup, info, config, mqtt,
 }) => {
-
   // Subscribe external cmds for nodered
   mqtt.subscribe(`everest_external/nodered/${config.module.connector_id}/carsim/cmd/enable`, (mod, en) => { enable(mod, { value: en }); });
   mqtt.subscribe(`everest_external/nodered/${config.module.connector_id}/carsim/cmd/execute_charging_session`, (mod, str) => {
@@ -102,13 +101,24 @@ boot_module(async ({
 
   // subscribe vars of used modules
   setup.uses.simulation_control.subscribe.simulation_feedback((mod, args) => { mod.simulation_feedback = args; });
-  setup.uses.slac.subscribe.state((mod, args) => { mod.slac_state = args; });
 
-  // ISO15118 ev setup
-  setup.uses.ev.subscribe.AC_EVPowerReady((mod, value) => { mod.iso_pwr_ready = value; });
-  setup.uses.ev.subscribe.AC_EVSEMaxCurrent((mod, value) => { mod.evse_maxcurrent = value; });
-  setup.uses.ev.subscribe.AC_StopFromCharger((mod) => { mod.iso_stopped = true; });
-  setup.uses.ev.subscribe.V2G_Session_Finished((mod) => { mod.v2g_finished = true; });
+  if (setup.uses_list.slac.length == 1) {
+    evlog.info('SLAC support enabled.');
+    setup.uses_list.slac[0].subscribe.state((mod, args) => { mod.slac_state = args; });
+  } else {
+    evlog.info('SLAC support disabled.');
+  }
+
+  if (setup.uses_list.ev.length == 1) {
+    evlog.info('ISO15118 support enabled.');
+    // ISO15118 ev setup
+    setup.uses_list.ev[0].subscribe.AC_EVPowerReady((mod, value) => { mod.iso_pwr_ready = value; });
+    setup.uses_list.ev[0].subscribe.AC_EVSEMaxCurrent((mod, value) => { mod.evse_maxcurrent = value; });
+    setup.uses_list.ev[0].subscribe.AC_StopFromCharger((mod) => { mod.iso_stopped = true; });
+    setup.uses_list.ev[0].subscribe.V2G_Session_Finished((mod) => { mod.v2g_finished = true; });
+  } else {
+    evlog.info('ISO15118 support disabled.');
+  }
 
   globalconf = config;
 }).then((mod) => {
@@ -438,7 +448,7 @@ function registerAllCmds(mod) {
   registerCmd(mod, 'iso_wait_slac_matched', 0, (mod, c) => {
     mod.state = 'pluggedin';
     if (mod.slac_state === undefined) return false;
-    if (mod.slac_state === 'UNMATCHED') mod.uses.slac.call.enter_bcd();
+    if (mod.slac_state === 'UNMATCHED' && mod.uses_list.slac.length == 1) mod.uses_list.slac[0].call.enter_bcd();
     if (mod.slac_state === 'MATCHED') return true;
   });
   // --- wip
@@ -461,7 +471,7 @@ function registerAllCmds(mod) {
 
     args = { PaymentOption: mod.payment, EnergyTransferMode: mod.energymode };
 
-    if (mod.uses.ev.call.start_charging(args) === true) {
+    if (mod.uses_list.ev.length == 1 && mod.uses_list.ev[0].call.start_charging(args) === true) {
       return true;
     }
     return false; // TODO:SL: Bleibt ewig in einer Schleife hängen, weil es nicht weiter geht
@@ -485,7 +495,7 @@ function registerAllCmds(mod) {
   });
 
   registerCmd(mod, 'iso_stop_charging', 0, (mod, c) => {
-    mod.uses.ev.call.stop_charging();
+    if (mod.uses_list.ev.length == 1) mod.uses_list.ev[0].call.stop_charging();
     mod.state = 'pluggedin';
     return true;
   });
@@ -495,7 +505,7 @@ function registerAllCmds(mod) {
       c.timeLeft = c.args[0] * 4 + 1; // First time set the timer
     }
     if (!(c.timeLeft-- > 0)) {
-      mod.uses.ev.call.stop_charging();
+      if (mod.uses_list.ev.length == 1) mod.uses_list.ev[0].call.stop_charging();
       mod.state = 'pluggedin';
       return true;
     }

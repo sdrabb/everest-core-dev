@@ -374,8 +374,8 @@ void EvseManager::ready() {
 
     r_bsp->subscribe_nr_of_phases_available([this](int n) { signalNrOfPhasesAvailable(n); });
 
-    if (r_powermeter.size() > 0) {
-        r_powermeter[0]->subscribe_powermeter([this](types::powermeter::Powermeter p) {
+    if (r_powermeter_billing().size()>0) {
+        r_powermeter_billing()[0]->subscribe_powermeter([this](types::powermeter::Powermeter p) {
             // Inform charger about current charging current. This is used for slow OC detection.
             if (p.current_A.is_initialized() && p.current_A.get().L1.is_initialized() &&
                 p.current_A.get().L2.is_initialized() && p.current_A.get().L3.is_initialized()) {
@@ -389,7 +389,10 @@ void EvseManager::ready() {
             }
 
             // Store local cache
-            latest_powermeter_data = p;
+            {
+                std::scoped_lock lock(power_mutex);
+                latest_powermeter_data_billing = p;
+            }
 
             // External Nodered interface
             if (p.phase_seq_error.is_initialized()) {
@@ -466,8 +469,9 @@ void EvseManager::ready() {
     EVLOG_info << fmt::format(fmt::emphasis::bold | fg(fmt::terminal_color::green), ">>> Ready to start charging <<<");
 }
 
-types::powermeter::Powermeter EvseManager::get_latest_powermeter_data() {
-    return latest_powermeter_data;
+types::powermeter::Powermeter EvseManager::get_latest_powermeter_data_billing() {
+    std::scoped_lock lock(power_mutex);
+    return latest_powermeter_data_billing;
 }
 
 types::board_support::HardwareCapabilities EvseManager::get_hw_capabilities() {
@@ -501,8 +505,8 @@ void EvseManager::setup_fake_DC_mode() {
     transfer_modes.insert(transfer_modes.end(), "DC_extended");
     transfer_modes.insert(transfer_modes.end(), "DC_combo_core");
     transfer_modes.insert(transfer_modes.end(), "DC_unique");
-    r_hlc[0]->call_set_DC_EVSECurrentRegulationTolerance(config.dc_current_regulation_tolerance);
-    r_hlc[0]->call_set_DC_EVSEPeakCurrentRipple(config.dc_peak_current_ripple);
+    r_hlc[0]->call_set_DC_EVSECurrentRegulationTolerance(powersupply_capabilities.current_regulation_tolerance_A);
+    r_hlc[0]->call_set_DC_EVSEPeakCurrentRipple(powersupply_capabilities.peak_current_ripple_A);
     r_hlc[0]->call_set_DC_EVSEPresentVoltage(400); // FIXME: set a correct values
     r_hlc[0]->call_set_DC_EVSEPresentCurrent(0);
 
@@ -800,6 +804,18 @@ bool EvseManager::wait_powersupply_DC_below_voltage(double target_voltage) {
         }
     }
     return voltage_ok;
+}
+
+const std::vector<std::unique_ptr<powermeterIntf>>& EvseManager::r_powermeter_billing() {
+    if (r_powermeter_car_side.size() > 0) {
+        return r_powermeter_car_side;
+    } else {
+        return r_powermeter_grid_side;
+    }
+}
+
+const std::vector<std::unique_ptr<powermeterIntf>>& EvseManager::r_powermeter_energy_management() {
+    return r_powermeter_grid_side;
 }
 
 } // namespace module

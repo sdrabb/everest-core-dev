@@ -1,5 +1,5 @@
 {
-	"description": "EVSE Manager",
+	"description": "EVSE Manager. Grid side power meter: Will be used for energy management. Will also be used for billing if no car side power meter connected. Car side powermeter: Will be used for billing if present.",
 	"config": {
 		"connector_id": {
 			"description": "Connector id of this evse manager",
@@ -123,7 +123,12 @@
 		"bsp": {
 			"interface": "board_support_AC"
 		},
-		"powermeter": {
+		"powermeter_grid_side": {
+			"interface": "powermeter",
+			"min_connections": 0,
+			"max_connections": 1
+		},
+		"powermeter_car_side": {
 			"interface": "powermeter",
 			"min_connections": 0,
 			"max_connections": 1

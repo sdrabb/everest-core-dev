@@ -34,10 +34,11 @@ public:
 
 protected:
     // command handler functions (virtual)
-    virtual void handle_enforce_limits(std::string& uuid, types::energy::Limits& limits_import,
-                                       types::energy::Limits& limits_export,
-                                       std::vector<types::energy::TimeSeriesEntry>& schedule_import,
-                                       std::vector<types::energy::TimeSeriesEntry>& schedule_export) override;
+    virtual void handle_enforce_limits( std::string& uuid, 
+                                        types::energy::Limits& limits_import,
+                                        types::energy::Limits& limits_export,
+                                        std::vector<types::energy::TimeSeriesEntry>& schedule_import,
+                                        std::vector<types::energy::TimeSeriesEntry>& schedule_export) override;
 
     // ev@d2d1847a-7b88-41dd-ad07-92785f06f5c4:v1
     // insert your protected definitions here
@@ -53,13 +54,13 @@ private:
     // ev@3370e4dd-95f4-47a9-aaec-ea76f34a66c9:v1
     std::mutex energy_mutex;
     // contains our own data and children
-    json energy;
+    types::energy::EnergyNode energy{};
     // contains only the pricing informations last update
-    json energy_price;
+    types::energy_price_information::EnergyPriceSchedule energy_price{};
     // contains latest power meter update
     json powermeter;
     void publish_complete_energy_object();
-    json merge_price_into_schedule(json s, json price);
+    std::vector<types::energy::TimeSeriesEntryExtended> merge_price_into_schedule(std::vector<types::energy::TimeSeriesEntryExtended> schedule, types::energy_price_information::EnergyPriceSchedule price);
     void initializeEnergyObject();
     // ev@3370e4dd-95f4-47a9-aaec-ea76f34a66c9:v1
 };

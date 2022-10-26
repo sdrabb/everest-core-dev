@@ -53,9 +53,9 @@ private:
     std::mutex energy_mutex;
     double _price_limit;
     double _price_limit_previous_value;
-    std::string _optimizer_mode;
+    types::energy::OptimizerMode _optimizer_mode;
     double _manual_current_limit_A;
-    json energy;
+    types::energy::EnergyNode energy;
 
     void initializeEnergyObject();
     void updateAndPublishEnergyObject();
@@ -64,8 +64,6 @@ private:
 
 // ev@3d7da0ad-02c2-493d-9920-0bbbd56b9876:v1
 // insert other definitions here
-#define EVSE_OPTIMIZER_MODE_MANUAL_LIMITS std::string("manual_limits")
-#define EVSE_OPTIMIZER_MODE_PRICE_DRIVEN  std::string("price_driven")
 // ev@3d7da0ad-02c2-493d-9920-0bbbd56b9876:v1
 
 } // namespace energy_grid

@@ -155,6 +155,15 @@
                 }
             }
         },
+        "OptimizerMode": {
+            "description": "Mode of operation for the EVSE manager optimization algorithm.",
+            "type": "string",
+            "enum": [
+                "ManualLimits",
+                "PriceDriven",
+                "None"
+            ]
+        },
         "AcCurrentLimitExtended": {
             "description": "AC current limit object",
             "type": "object",

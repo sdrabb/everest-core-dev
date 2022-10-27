@@ -96,16 +96,16 @@ void energyImpl::publish_complete_energy_object() {
 
         if (!powermeter.is_null()) {
 
-            EVLOG_error << energy << "\n";
-            EVLOG_error << powermeter << "\n";
+            // EVLOG_error << energy << "\n";
+            // EVLOG_error << powermeter << "\n";
             // energy_complete.energy_usage = powermeter;
             energy_complete.energy_usage = types::units::Power();
             from_json(powermeter["energy_Wh_import"], *(energy_complete.energy_usage) );
-            EVLOG_error << "Done!\n";
+            // EVLOG_error << "Done!\n";
         }
     }
 
-    EVLOG_error << energy_complete << "\n";
+    // EVLOG_error << energy_complete << "\n";
     publish_energy(energy_complete);
 }
 

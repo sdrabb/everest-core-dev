@@ -23,7 +23,10 @@ void energyImpl::init() {
         mod->r_powermeter_energy_management()[0]->subscribe_powermeter([this](json p) {
             // Received new power meter values, update our energy object.
             std::lock_guard<std::mutex> lock(this->energy_mutex);
+    EVLOG_error << "before\n";
+            energy.energy_usage = types::units::Power();
             from_json(p["energy_Wh_import"], *(energy.energy_usage) );
+    EVLOG_error << "after\n";
         });
     }
 
@@ -78,7 +81,7 @@ void energyImpl::ready() {
     hw_limits.min_phase_count = hw_caps.min_phase_count;
     hw_limits.supports_changing_phases_during_charging = hw_caps.supports_changing_phases_during_charging;
     schedule_entry.request_parameters.ac_current_A = hw_limits;
-
+    
     {
         std::lock_guard<std::mutex> lock(this->energy_mutex);
         energy.schedule_import = std::vector<types::energy::TimeSeriesEntryExtended>();

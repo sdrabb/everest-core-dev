@@ -51,11 +51,11 @@ private:
 
     // ev@3370e4dd-95f4-47a9-aaec-ea76f34a66c9:v1
     std::mutex energy_mutex;
-    double _price_limit;
-    double _price_limit_previous_value;
+    double _price_limit{0};
+    double _price_limit_previous_value{0};
     types::energy::OptimizerMode _optimizer_mode;
-    double _manual_current_limit_A;
-    types::energy::EnergyNode energy;
+    double _manual_current_limit_A{0};
+    types::energy::EnergyNode energy{};
 
     void initializeEnergyObject();
     void updateAndPublishEnergyObject();

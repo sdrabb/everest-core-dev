@@ -50,6 +50,7 @@ void energyImpl::init() {
                         energy.children->push_back(e_node);
                     }
                 } else {
+                    energy.children = std::vector<types::energy::EnergyNode>();
                     energy.children->push_back(e_node);
                 }
             }

@@ -23,10 +23,8 @@ void energyImpl::init() {
         mod->r_powermeter_energy_management()[0]->subscribe_powermeter([this](json p) {
             // Received new power meter values, update our energy object.
             std::lock_guard<std::mutex> lock(this->energy_mutex);
-    EVLOG_error << "before\n";
             energy.energy_usage = types::units::Power();
-            from_json(p["energy_Wh_import"], *(energy.energy_usage) );
-    EVLOG_error << "after\n";
+            from_json(p["energy_Wh_import"], *(energy.energy_usage));
         });
     }
 
@@ -54,8 +52,8 @@ void energyImpl::init() {
         updateAndPublishEnergyObject();
     });
 
-    mod->mqtt.subscribe("/external/" + mod->info.id + ":" + mod->info.name + "/cmd/switch_optimizer_mode",
-                        [this](json mode) {
+    mod->mqtt.subscribe(
+        "/external/" + mod->info.id + ":" + mod->info.name + "/cmd/switch_optimizer_mode", [this](json mode) {
                             if (mode == "price_driven") {
                                 _optimizer_mode = types::energy::OptimizerMode::PriceDriven;
                             } else if (mode == "manual_limits") {
@@ -69,7 +67,7 @@ void energyImpl::init() {
 void energyImpl::ready() {
     types::board_support::HardwareCapabilities hw_caps = mod->get_hw_capabilities();
     
-    types::energy::TimeSeriesEntryExtended schedule_entry {};
+    types::energy::TimeSeriesEntryExtended schedule_entry{};
     schedule_entry.timestamp = Everest::Date::to_rfc3339(date::utc_clock::now());
     schedule_entry.request_parameters = types::energy::LimitWithTypeExtended();
     schedule_entry.request_parameters.limit_type = types::energy::LimitType::Hard;
@@ -175,7 +173,8 @@ void energyImpl::updateAndPublishEnergyObject() {
         {
             std::lock_guard<std::mutex> lock(this->energy_mutex);
             if (energy.schedule_import.has_value()) {
-                energy.schedule_import.get()[0].request_parameters.ac_current_A.get().max_current_A = mod->getLocalMaxCurrentLimit();
+                energy.schedule_import.get()[0].request_parameters.ac_current_A.get().max_current_A =
+                    mod->getLocalMaxCurrentLimit();
             } else {
                 return;
             }

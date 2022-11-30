@@ -6,32 +6,12 @@ project(everest-core
 	LANGUAGES CXX C
 )
 
-find_package(everest-cmake 0.1
-    COMPONENTS bundling
-    PATHS ../everest-cmake
-)
-
-if (NOT everest-cmake_FOUND)
-    message(STATUS "Retreiving everest-cmake using FetchContent")
-    include(FetchContent)
-    FetchContent_Declare(
-        everest-cmake
-        GIT_REPOSITORY https://github.com/EVerest/everest-cmake.git
-        GIT_TAG        main
-    )
-    FetchContent_MakeAvailable(everest-cmake)
-    set(everest-cmake_DIR "${everest-cmake_SOURCE_DIR}")
-    set(everest-cmake_FIND_COMPONENTS "bundling")
-    include("${everest-cmake_SOURCE_DIR}/everest-cmake-config.cmake")
-endif()
-
 # make own cmake modules available
 list(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-# FIXME (aw): clean up this inclusion chain
-include(ev-cli)
-include(config-run-script)
-include(config-run-nodered-script)
 
+include(bootstrap)
+
+option(NO_FETCH_CONTENT "Do not automatically fetch anything (for open embedded builds)" OFF)
 option(CREATE_SYMLINKS "Create symlinks to javascript modules and auxillary files - for development purposes" OFF)
 option(CMAKE_RUN_CLANG_TIDY "Run clang-tidy" OFF)
 option(BUILD_TESTING "Run unit tests" OFF)
@@ -41,7 +21,6 @@ option(BUILD_TESTING "Run unit tests" OFF)
 option(BUILD_DEV_TESTS "Build dev tests" OFF)
 
 # dependencies
-require_ev_cli_version("0.0.16")
 
 find_package(Boost
     COMPONENTS

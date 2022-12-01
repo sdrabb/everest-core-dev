@@ -7,6 +7,7 @@ ev_add_modules(
     EvseSlac
     Example
     ExampleUser
+    GenericPowermeter
     JsCarSimulator
     JsCarV2G
     JsIMDSimulator

@@ -1,0 +1,33 @@
+description: Powermeter driver for various powermeter hardware
+provides:
+  main:
+    description: Implementation of the driver functionality
+    interface: powermeter
+    config:
+      model:
+        description: Selector for the powermeter configuration file to be used
+        type: string
+        enum:
+        - Eastron_SDM72DM-V2
+        - Eastron_SDM230
+        - test_dummy
+        default: test_dummy
+      powermeter_device_id:
+        description: The powermeter's address on the serial bus
+        type: integer
+        minimum: 0
+        maximum: 255
+        default: 1
+      modbus_dead_time:
+        description: Sets a pause (in ms) between modbus RTU calls, in case the device needs time to process messages
+        type: integer
+        minimum: 0
+        maximum: 15000
+        default: 0
+requires:
+  serial_comm_hub:
+    interface: serial_communication_hub
+metadata:
+  license: https://opensource.org/licenses/Apache-2.0
+  authors:
+    - Lars Dieckmann

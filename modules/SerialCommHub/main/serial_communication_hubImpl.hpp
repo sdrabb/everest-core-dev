@@ -14,6 +14,7 @@
 
 // ev@75ac1216-19eb-4182-a85c-820f1fc2c091:v1
 // insert your custom include headers here
+#include <chrono>
 #include <connection/serial_connection_helper.hpp>
 #include <modbus/exceptions.hpp>
 #include <modbus/utils.hpp>
@@ -55,6 +56,9 @@ protected:
     virtual types::serial_comm_hub_requests::Result
     handle_modbus_read_holding_registers(int& target_device_id, int& first_register_address, int& num_registers_to_read,
                                          int& pause_between_messages) override;
+    virtual types::serial_comm_hub_requests::Result
+    handle_modbus_read_input_registers(int& target_device_id, int& first_register_address, int& num_registers_to_read,
+                                       int& pause_between_messages) override;
     virtual types::serial_comm_hub_requests::StatusCodeEnum
     handle_modbus_write_multiple_registers(int& target_device_id, int& first_register_address,
                                            types::serial_comm_hub_requests::VectorUint16& data_raw,

@@ -1,0 +1,14 @@
+#ifndef _PATH_CONFIG_HPP
+#define _PATH_CONFIG_HPP
+
+#include <string>
+
+namespace generic_powermeter {
+
+std::string getModelConfigPath() {
+    return "${GENERIC_POWERMETER_MODEL_CONFIG_PATH}";
+}
+
+} // namespace generic_powermeter
+
+#endif // _PATH_CONFIG_HPP

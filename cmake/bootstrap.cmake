@@ -35,6 +35,7 @@ if (NOT EV_CLI)
     # make sure python3 venv is available
     evc_assert_python_venv()
 
+    message(STATUS "Installing ev-dev-tools to python venv")
     execute_process(
         COMMAND ${PYTHON3_VENV_EXECUTABLE} -m pip install ${PROJECT_SOURCE_DIR}/tools/ev-dev-tools
     )

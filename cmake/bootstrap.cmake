@@ -32,25 +32,11 @@ unset (EVEREST_CMAKE_SEARCH_PATH) # clean up
 # look out for ev-cli
 #
 if (NOT EV_CLI)
-    if (NO_FETCH_CONTENT)
-        message(FATAL_ERROR "Cannot fetch ev-cli due to NO_FETCH_CONTENT=1, please specify EV_CLI manually")
-    endif ()
-
     # make sure python3 venv is available
     evc_assert_python_venv()
 
-    message(STATUS "Retrieving ev-cli using FetchContent")
-    # FIXME (aw): this will be removed if ev-cli gets into this repository
-
-    FetchContent_Declare(
-        everest-utils
-        GIT_REPOSITORY https://github.com/EVerest/everest-utils
-        GIT_TAG        main
-    )
-    FetchContent_Populate(everest-utils)
-
     execute_process(
-        COMMAND ${PYTHON3_VENV_EXECUTABLE} -m pip install ${everest-utils_SOURCE_DIR}/ev-dev-tools
+        COMMAND ${PYTHON3_VENV_EXECUTABLE} -m pip install ${PROJECT_SOURCE_DIR}/tools/ev-dev-tools
     )
 
     find_program (EV_CLI ev-cli

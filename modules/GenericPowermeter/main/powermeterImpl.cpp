@@ -155,21 +155,21 @@ void powermeterImpl::init_default_values() {
             if (this->pm_last_values.VAR.has_value()) {
                 var = this->pm_last_values.VAR.get();
             }
-            var.VARphA = 0.0f;
+            var.L1 = 0.0f;
             this->pm_last_values.VAR = var;
         } else if(register_data.type == REACTIVE_POWER_VAR_L2) {
             types::units::ReactivePower var;
             if (this->pm_last_values.VAR.has_value()) {
                 var = this->pm_last_values.VAR.get();
             }
-            var.VARphB = 0.0f;
+            var.L2 = 0.0f;
             this->pm_last_values.VAR = var;
         } else if(register_data.type == REACTIVE_POWER_VAR_L3) {
             types::units::ReactivePower var;
             if (this->pm_last_values.VAR.has_value()) {
                 var = this->pm_last_values.VAR.get();
             }
-            var.VARphC = 0.0f;
+            var.L3 = 0.0f;
             this->pm_last_values.VAR = var;
         } else if(register_data.type == CURRENT_A_DC) {
             types::units::Current amp;
@@ -439,15 +439,15 @@ void powermeterImpl::process_response(const RegisterData& register_data,
             this->pm_last_values.VAR = var;
         } else if (register_data.type == REACTIVE_POWER_VAR_L1) {
             types::units::ReactivePower var = this->pm_last_values.VAR.get();
-            var.VARphA = merge_register_values_into_element(register_data, exponent, register_message);
+            var.L1 = merge_register_values_into_element(register_data, exponent, register_message);
             this->pm_last_values.VAR = var;
         } else if (register_data.type == REACTIVE_POWER_VAR_L2) {
             types::units::ReactivePower var = this->pm_last_values.VAR.get();
-            var.VARphB = merge_register_values_into_element(register_data, exponent, register_message);
+            var.L2 = merge_register_values_into_element(register_data, exponent, register_message);
             this->pm_last_values.VAR = var;
         } else if (register_data.type == REACTIVE_POWER_VAR_L3) {
             types::units::ReactivePower var = this->pm_last_values.VAR.get();
-            var.VARphC = merge_register_values_into_element(register_data, exponent, register_message);
+            var.L3 = merge_register_values_into_element(register_data, exponent, register_message);
             this->pm_last_values.VAR = var;
         } else if (register_data.type == CURRENT_A_DC) {
             types::units::Current amp = this->pm_last_values.current_A.get();

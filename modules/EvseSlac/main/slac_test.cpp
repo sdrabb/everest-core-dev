@@ -118,34 +118,39 @@ private:
     const std::array<uint8_t, ETH_ALEN>& mac;
 };
 
-void feed_machine_for(FSM& machine, int period_ms, int feed_result) {
+void feed_machine_for(FSM& machine, int period_ms, fsm::FeedResult<FSMReturnType> feed_result) {
     using namespace std::chrono;
 
     auto end_tp = steady_clock::now() + milliseconds(period_ms);
 
     while (true) {
-        if (feed_result > 0) {
-            //
-        } else if (feed_result == fsm::DO_NOT_CALL_ME_AGAIN) {
-            break;
-        } else if (feed_result == fsm::EVENT_UNHANDLED) {
+        if (feed_result.transition()) {
+            // need to call feed
+        } else if (feed_result.unhandled_event()) {
             printf("DEBUG: got an unhandled event\n");
             break;
-        } else if (feed_result == fsm::EVENT_HANDLED_INTERNALLY || feed_result == 0) {
-            // when handled internally, we'll call right again
-            feed_result = machine.feed();
-            continue;
+        } else if (feed_result.internal_error()) {
+            printf("ERROR: internal FSM error\n");
+            exit(EXIT_FAILURE);
+        } else if (feed_result.has_value() == false) {
+            // nothing to do
+            break;
+        } else if (feed_result.has_value() == true) {
+            const auto timeout = *feed_result;
+            if (timeout == 0) {
+                // need to call feed directly
+            } else {
+                auto next_tp = steady_clock::now() + milliseconds(timeout);
+                if (next_tp > end_tp) {
+                    break;
+                }
+
+                std::this_thread::sleep_until(next_tp);
+            }
         } else {
-            printf("ERROR: unknown feed result\n");
+            printf("ERROR: unknown feed result case\n");
             exit(EXIT_FAILURE);
         }
-
-        auto next_tp = steady_clock::now() + milliseconds(feed_result);
-        if (next_tp > end_tp) {
-            break;
-        }
-
-        std::this_thread::sleep_until(next_tp);
 
         feed_result = machine.feed();
     }
@@ -170,7 +175,8 @@ int main(int argc, char* argv[]) {
     //
     // reset machine
     //
-    auto fr = machine.reset<ResetState>(ctx);
+    machine.reset<ResetState>(ctx);
+    auto fr = machine.feed();
 
     // assert that CM_SET_KEY_REQ gets set!
     if (!msg_in.has_value() || msg_in->get_mmtype() != (slac::defs::MMTYPE_CM_SET_KEY | slac::defs::MMTYPE_MODE_REQ)) {
@@ -184,17 +190,20 @@ int main(int argc, char* argv[]) {
 
     // feed in CM_SET_KEY_CNF
     ctx.slac_message_payload = create_cm_set_key_cnf();
-    machine.feed_event(Event::SLAC_MESSAGE);
+    machine.handle_event(Event::SLAC_MESSAGE);
+    fr = machine.feed();
 
     // should be idle state now, send ENTER_BCD, to enter MATCHING
-    fr = machine.feed_event(Event::ENTER_BCD);
+    machine.handle_event(Event::ENTER_BCD);
+    fr = machine.feed();
 
     feed_machine_for(machine, 300, fr);
 
     // create session 1 and inject CM_SLAC_PARM_REQ
     auto session_1 = EVSession({0, 1, 2, 3, 4, 5, 6, 7}, {0xca, 0xfe, 0xca, 0xfe, 0xca, 0xfe});
     ctx.slac_message_payload = session_1.create_cm_slac_parm_req();
-    fr = machine.feed_event(Event::SLAC_MESSAGE);
+    machine.handle_event(Event::SLAC_MESSAGE);
+    fr = machine.feed();
 
     // assert that CM_SLAC_PARM_CNF gets set!
     if (!msg_in.has_value() ||
@@ -209,15 +218,18 @@ int main(int argc, char* argv[]) {
 
     // inject CM_START_ATTEN_CHAR_IND
     ctx.slac_message_payload = session_1.create_cm_start_atten_char_ind();
-    fr = machine.feed_event(Event::SLAC_MESSAGE);
+    machine.handle_event(Event::SLAC_MESSAGE);
+    fr = machine.feed();
 
     // inject all the soundings ...
     for (int i = 0; i < slac::defs::CM_SLAC_PARM_CNF_NUM_SOUNDS - 1; i++) {
         ctx.slac_message_payload = session_1.create_cm_mnbc_sound_ind();
-        machine.feed_event(Event::SLAC_MESSAGE);
+        machine.handle_event(Event::SLAC_MESSAGE);
+        fr = machine.feed();
 
         ctx.slac_message_payload = session_1.create_cm_atten_profile_ind();
-        machine.feed_event(Event::SLAC_MESSAGE);
+        machine.handle_event(Event::SLAC_MESSAGE);
+        fr = machine.feed();
     }
 
     feed_machine_for(machine, 700, fr);
@@ -240,8 +252,8 @@ int main(int argc, char* argv[]) {
 
     // "async" insert an CM_VALIDATE.REQ
     ctx.slac_message_payload = create_cm_validate_req();
-    machine.feed_event(Event::SLAC_MESSAGE);
-    machine.feed();
+    machine.handle_event(Event::SLAC_MESSAGE);
+    fr = machine.feed();
 
     // assert that CM_VALIDATE.CNF gets set!
     if (!msg_in.has_value() || msg_in->get_mmtype() != (slac::defs::MMTYPE_CM_VALIDATE | slac::defs::MMTYPE_MODE_CNF)) {
@@ -258,22 +270,23 @@ int main(int argc, char* argv[]) {
 
     // inject CM_ATTEN_CHAR_RSP
     ctx.slac_message_payload = session_1.create_cm_atten_char_rsp();
-    fr = machine.feed_event(Event::SLAC_MESSAGE);
+    machine.handle_event(Event::SLAC_MESSAGE);
+    fr = machine.feed();
 
     feed_machine_for(machine, 1000, fr);
 
     // inject messages from a second session
     auto session_2 = EVSession({9, 1, 2, 3, 4, 5, 6, 7}, {0xbe, 0xaf, 0xbe, 0xaf, 0xbe, 0xaf});
     ctx.slac_message_payload = session_2.create_cm_slac_parm_req();
-    fr = machine.feed_event(Event::SLAC_MESSAGE);
+    machine.handle_event(Event::SLAC_MESSAGE);
+    fr = machine.feed();
 
     feed_machine_for(machine, 1000, fr);
 
     // inject CM_SLAC_MATCH_REQ
     ctx.slac_message_payload = session_1.create_cm_slac_match_req();
-    machine.feed_event(Event::SLAC_MESSAGE);
-
-    machine.feed();
+    machine.handle_event(Event::SLAC_MESSAGE);
+    fr = machine.feed();
 
     // assert that CM_SLAC_MATCH_CNF gets set!
     if (!msg_in.has_value() ||

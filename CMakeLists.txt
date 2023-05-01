@@ -70,6 +70,8 @@ else()
     find_package(pugixml REQUIRED)
 endif()
 
+add_subdirectory(lib/staging)
+
 include(ev-project-bootstrap)
 
 ev_add_project()

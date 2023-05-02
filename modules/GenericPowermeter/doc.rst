@@ -4,6 +4,8 @@
 GenericPowermeter
 ************************
 
+See also module's :ref:`auto-generated reference <everest_modules_GenericPowermeter>`.
+
 The module ``GenericPowermeter`` provides a connection to get data from 
 powermeters that are connected via Modbus RTU and whose data is automatically 
 updated (without startup configuration and/or request functions). 

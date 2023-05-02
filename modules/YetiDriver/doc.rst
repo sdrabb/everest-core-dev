@@ -1,3 +1,5 @@
+.. _everest_modules_handwritten_YetiDriver:
+
 ************************
 YetiDriver
 ************************

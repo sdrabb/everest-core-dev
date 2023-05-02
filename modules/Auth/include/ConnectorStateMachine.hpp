@@ -19,12 +19,12 @@ enum class ConnectorEvent {
 };
 
 enum class ConnectorState {
-    AVAILABLE,           // "Available"
-    UNAVAILABLE,         // "Unavailable"
-    FAULTED,             // "Faulted"
-    OCCUPIED,            // "Occupied"
-    UNAVAILABLE_FAULTED, // "UnavailableFaulted"
-    FAULTED_OCCUPIED     // "FaultedOccupied"
+    AVAILABLE,
+    UNAVAILABLE,
+    FAULTED,
+    OCCUPIED,
+    UNAVAILABLE_FAULTED,
+    FAULTED_OCCUPIED
 };
 
 class ConnectorStateMachine {

@@ -8,7 +8,7 @@
 
 #include "matching.hpp"
 
-static auto create_cm_set_key_req(uint8_t* session_nmk) {
+static auto create_cm_set_key_req(uint8_t const * session_nmk) {
     slac::messages::cm_set_key_req set_key_req;
 
     set_key_req.key_type = slac::defs::CM_SET_KEY_REQ_KEY_TYPE_NMK;
@@ -44,14 +44,15 @@ FSMSimpleState::HandleEventReturnType ResetState::handle_event(AllocatorType& sa
 }
 
 FSMSimpleState::CallbackReturnType ResetState::callback() {
+    const auto& cfg = ctx.slac_config;
     if (setup_has_been_send == false) {
-        auto set_key_req = create_cm_set_key_req(ctx.session_nmk);
+        auto set_key_req = create_cm_set_key_req(cfg.session_nmk);
 
-        ctx.send_slac_message(ctx.plc_peer_mac, set_key_req);
+        ctx.send_slac_message(cfg.plc_peer_mac, set_key_req);
 
         setup_has_been_send = true;
 
-        return ctx.set_key_timeout_ms;
+        return cfg.set_key_timeout_ms;
     } else {
         ctx.log_info("CM_SET_KEY_REQ timeout - failed to setup NMK key");
         return {};
@@ -102,7 +103,7 @@ FSMSimpleState::HandleEventReturnType MatchedState::handle_event(AllocatorType& 
 
 void MatchedState::leave() {
     // FIXME (aw): do we want to generate the NMK here?
-    ctx.generate_nmk();
+    ctx.slac_config.generate_nmk();
     ctx.signal_dlink_ready(false);
 }
 

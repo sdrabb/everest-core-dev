@@ -159,6 +159,7 @@ void feed_machine_for(FSM& machine, int period_ms, fsm::FeedResult<FSMReturnType
 }
 
 int main(int argc, char* argv[]) {
+    const auto ATTENUATION_ADJUSTMENT = 10;
     printf("Hi from SLAC!\n");
 
     std::optional<slac::messages::HomeplugMessage> msg_in;
@@ -169,6 +170,7 @@ int main(int argc, char* argv[]) {
     callbacks.send_raw_slac = [&msg_in](slac::messages::HomeplugMessage& hp_message) { msg_in = hp_message; };
 
     auto ctx = Context(callbacks);
+    ctx.slac_config.sounding_atten_adjustment = ATTENUATION_ADJUSTMENT;
 
     auto machine = FSM();
 
@@ -242,7 +244,7 @@ int main(int argc, char* argv[]) {
     } else {
         auto atten_char_ind = msg_in->get_payload<slac::messages::cm_atten_char_ind>();
         for (int i = 0; i < slac::defs::AAG_LIST_LEN; ++i) {
-            if (atten_char_ind.attenuation_profile.aag[i] != i) {
+            if (atten_char_ind.attenuation_profile.aag[i] != i + ATTENUATION_ADJUSTMENT) {
                 printf("Averaging not correct in ATTEN_CHAR_IND\n");
                 exit(EXIT_FAILURE);
             }

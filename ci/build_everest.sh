@@ -2,7 +2,8 @@
 
 echo "##############   build everest dependency manager   #############"
 
-mkdir -p /checkout/everest-workspace/
+sudo mkdir -p /checkout/everest-workspace/
+sudo chown -R docker /checkout
 cd /checkout/everest-workspace/
 git clone https://github.com/EVerest/everest-dev-environment.git
 cd /checkout/everest-workspace/everest-dev-environment/dependency_manager
@@ -31,7 +32,7 @@ echo "##############   build everest-core   #############"
 mkdir -p /checkout/everest-workspace/everest-core/build
 cd /checkout/everest-workspace/everest-core/build
 
-echo "export PATH=$PATH:/root/.local/bin" >> ~/.bashrc
+echo "export PATH=$PATH:/home/docker/.local/bin" >> ~/.bashrc
 
 cmake -j$(nproc) ..
 make -j$(nproc) install

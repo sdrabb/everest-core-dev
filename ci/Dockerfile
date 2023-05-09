@@ -1,11 +1,5 @@
 FROM ghcr.io/linuxcontainers/debian-slim:11
 
-ARG USERNAME=docker
-ARG USER_UID=1000
-RUN useradd -ms /bin/bash -u ${USER_UID} -U ${USERNAME}
-RUN usermod -aG sudo docker
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
 ENV PORT 80
 
 RUN apt update && apt upgrade -y
@@ -41,8 +35,14 @@ RUN apt install -y \
     python3-pytest-asyncio \
     python3-pyftpdlib \
     python3-openssl \
-    libpcap-dev
+    libpcap-dev \
+    sudo
 
+ARG USERNAME=docker
+ARG USER_UID=1000
+RUN useradd -ms /bin/bash -u ${USER_UID} -U ${USERNAME}
+RUN usermod -aG sudo docker
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER ${USERNAME}
 
 RUN python3 -m pip install --upgrade \

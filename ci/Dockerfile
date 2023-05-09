@@ -4,6 +4,7 @@ ARG USERNAME=docker
 ARG USER_UID=1000
 RUN useradd -ms /bin/bash -u ${USER_UID} -U ${USERNAME}
 RUN usermod -aG sudo docker
+RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 ENV PORT 80
 

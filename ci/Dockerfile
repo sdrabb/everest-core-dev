@@ -3,6 +3,7 @@ FROM ghcr.io/linuxcontainers/debian-slim:11
 ARG USERNAME=docker
 ARG USER_UID=1000
 RUN useradd -ms /bin/bash -u ${USER_UID} -U ${USERNAME}
+RUN usermod -aG sudo docker
 
 ENV PORT 80
 

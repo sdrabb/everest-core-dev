@@ -40,7 +40,7 @@ RUN apt install -y \
 
 ARG USERNAME=docker
 ARG USER_UID=1000
-RUN useradd -ms /bin/bash -u ${USER_UID} -U ${USERNAME}
+RUN useradd --create-home --shell /bin/bash --uid ${USER_UID} ${USERNAME}
 RUN usermod -aG sudo,root docker
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER ${USERNAME}

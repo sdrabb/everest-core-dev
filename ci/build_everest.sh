@@ -13,13 +13,13 @@ python3 -m pip install .
 
 echo "##############   build ev-dev-tools   #############"
 
+cd /checkout/everest-workspace/
+git clone https://github.com/EVerest/everest-utils.git 
 cd /checkout/everest-workspace/everest-utils/ev-dev-tools
 python3 -m pip install .
 
 echo "##############   checkout everest-testing   #############"
 
-cd /checkout/everest-workspace/
-git clone https://github.com/EVerest/everest-utils.git 
 cd  /checkout/everest-workspace/everest-utils/everest-testing
 python3 -m pip install .
 

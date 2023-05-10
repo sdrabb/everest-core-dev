@@ -8,7 +8,7 @@ cd /checkout/everest-workspace/
 git clone https://github.com/EVerest/everest-dev-environment.git
 cd /checkout/everest-workspace/everest-dev-environment/dependency_manager
 python3 -m pip install .
-edm --config ../everest-complete-readonly.yaml --workspace /checkout/everest-workspace
+edm-tool --config ../everest-complete-readonly.yaml --workspace /checkout/everest-workspace
 
 echo "##############   build ev-dev-tools   #############"
 

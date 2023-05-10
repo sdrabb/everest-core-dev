@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export PATH=$PATH:/home/docker/.local/bin
+
 echo "##############   build everest dependency manager   #############"
 
 sudo mkdir -p /checkout/everest-workspace/
@@ -33,7 +35,6 @@ echo "##############   build everest-core   #############"
 mkdir -p /checkout/everest-workspace/everest-core/build
 cd /checkout/everest-workspace/everest-core/build
 
-echo "export PATH=$PATH:/home/docker/.local/bin" >> ~/.bashrc
 
 cmake -j$(nproc) ..
 make -j$(nproc) install

@@ -25,6 +25,7 @@ python3 -m pip install .
 echo "##############   checkout Josev   #############"
 
 cd /checkout/everest-workspace/Josev/
+ls -la /checkout/everest-workspace
 python3 -m pip install -r requirements.txt
 
 echo "##############   build everest-core   #############"

@@ -29,6 +29,7 @@ sudo chown -R docker /cpm_cache
 sudo chown -R docker /results
 cd /checkout/everest-workspace/
 git clone https://github.com/EVerest/everest-core.git 
+git checkout $CURRENT_BRANCH
 mkdir -p /checkout/everest-workspace/everest-core/build
 cd /checkout/everest-workspace/everest-core/build
 

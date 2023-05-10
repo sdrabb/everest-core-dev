@@ -10,7 +10,6 @@ cd /checkout/everest-workspace/
 git clone https://github.com/EVerest/everest-dev-environment.git
 cd /checkout/everest-workspace/everest-dev-environment/dependency_manager
 python3 -m pip install .
-edm-tool --config ../everest-complete-readonly.yaml --workspace /checkout/everest-workspace
 
 echo "##############   build ev-dev-tools   #############"
 
@@ -24,17 +23,12 @@ git clone https://github.com/EVerest/everest-utils.git
 cd  /checkout/everest-workspace/everest-utils/everest-testing
 python3 -m pip install .
 
-echo "##############   checkout Josev   #############"
-
-cd /checkout/everest-workspace/Josev/
-ls -la /checkout/everest-workspace
-python3 -m pip install -r requirements.txt
-
 echo "##############   build everest-core   #############"
 
+cd /checkout/everest-workspace/
+git clone https://github.com/EVerest/everest-core.git 
 mkdir -p /checkout/everest-workspace/everest-core/build
 cd /checkout/everest-workspace/everest-core/build
-
 
 cmake -j$(nproc) ..
 make -j$(nproc) install

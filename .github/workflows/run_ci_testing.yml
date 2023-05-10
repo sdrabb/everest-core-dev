@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+      - feature/lad-add-ci-testing
   pull_request:
     types:
       - opened

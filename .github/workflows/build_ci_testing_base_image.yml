@@ -1,8 +1,5 @@
 name: "Build CI Testing Base Image"
-on: 
-  push:
-    branches:
-      - feature/lad-add-ci-testing
+on:
   workflow_dispatch:
 jobs:
   test_A:

@@ -30,7 +30,7 @@ sudo chown -R docker /results
 cd /checkout/everest-workspace/
 git clone https://github.com/EVerest/everest-core.git
 cd /checkout/everest-workspace/everest-core
-git checkout $CURRENT_BRANCH
+git checkout $GIT_BRANCH
 mkdir -p /checkout/everest-workspace/everest-core/build
 cd /checkout/everest-workspace/everest-core/build
 

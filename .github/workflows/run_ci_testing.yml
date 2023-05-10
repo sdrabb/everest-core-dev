@@ -64,7 +64,7 @@ jobs:
       - name: Build everest-core
         run: docker run -a STDOUT -a STDERR -t
           -e CPM_SOURCE_CACHE=/cpm_cache
-          -e CURRENT_BRANCH=${{env.CURRENT_BRANCH}}
+          -e PR_BRANCH=${{ env.CURRENT_BRANCH }}
           --mount type=volume,dst=/cpm_cache,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=${{ env.RUNNER_CACHE }}
           --mount type=volume,dst=/runner_checkout,volume-driver=local,volume-opt=type=none,volume-opt=o=bind,volume-opt=device=${{ env.RUNNER_CHECKOUT }}
           --name everest-testing-container
@@ -92,9 +92,9 @@ jobs:
   #     ##############################################################
 
       - name: Build and Run the EVerest Testing System
-        run: RUN_TEST_SET=testset_01.sh docker-compose \
-          -f ${{ env.RUNNER_CHECKOUT }}/ci/docker-compose.yml up \
-          --abort-on-container-exit \
+        run: RUN_TEST_SET=testset_01.sh docker-compose
+          -f ${{ env.RUNNER_CHECKOUT }}/ci/docker-compose.yml up
+          --abort-on-container-exit
           --exit-code-from testing-machine
 
   #     ##############################################################
@@ -146,9 +146,9 @@ jobs:
       ##############################################################
 
       - name: Build and Run the EVerest Testing System
-        run: RUN_TEST_SET=testset_02.sh \
-          docker-compose -f ${{ env.RUNNER_CHECKOUT }}/ci/docker-compose.yml up \
-          --abort-on-container-exit \
+        run: RUN_TEST_SET=testset_02.sh
+          docker-compose -f ${{ env.RUNNER_CHECKOUT }}/ci/docker-compose.yml up
+          --abort-on-container-exit
           --exit-code-from testing-machine
 
       ##############################################################

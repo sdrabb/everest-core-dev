@@ -25,6 +25,8 @@ python3 -m pip install .
 
 echo "##############   build everest-core   #############"
 
+sudo chown -R docker /cpm_cache
+sudo chown -R docker /results
 cd /checkout/everest-workspace/
 git clone https://github.com/EVerest/everest-core.git 
 mkdir -p /checkout/everest-workspace/everest-core/build

@@ -112,7 +112,6 @@ jobs:
     runs-on: ubuntu-22.04
     needs: 
      [testset_01] ### ADD ALL PREVIOUS TEST JOBS HERE
-    if: success()
     permissions:
       checks: write
       pull-requests: write

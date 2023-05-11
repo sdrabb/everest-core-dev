@@ -23,10 +23,17 @@ echo "##############   checkout everest-testing   #############"
 cd  /checkout/everest-workspace/everest-utils/everest-testing
 python3 -m pip install .
 
+echo "##############   install additional dependencies   #############"
+
+cd /checkout/everest-workspace/
+git clone https://github.com/EVerest/ext-switchev-iso15118.git
+cd /checkout/everest-workspace/ext-switchev-iso15118
+python3 -m pip install -r requirements.txt
+
 echo "##############   build everest-core   #############"
 
 sudo chown -R docker /cpm_cache
-sudo chown -R docker /results
+
 cd /checkout/everest-workspace/
 git clone https://github.com/EVerest/everest-core.git
 cd /checkout/everest-workspace/everest-core

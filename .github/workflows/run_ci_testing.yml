@@ -110,6 +110,7 @@ jobs:
   testset_02:
     name: "Execute Basic Charge Test Set (testset_02)"
     runs-on: ubuntu-22.04
+    if: success() || failure()
     needs: 
      [testset_01] ### ADD ALL PREVIOUS TEST JOBS HERE
     permissions:
